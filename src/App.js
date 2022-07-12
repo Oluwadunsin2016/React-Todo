@@ -1,13 +1,9 @@
-// import { fortAwesome } from "fontawesome";
+
 import React, { useState, useEffect, useRef } from "react";
-import Addtodo from "./components/Addtodo";
-import ListTodo from "./components/ListTodo";
-// import {FontAwesomeIcon} from 'fontawesome'
-// import {free-solid-svg-icons} fortAwesome
 function App() {
   const [task, setTask] = useState("");
-  const [time, setTime] = useState(new Date().toLocaleTimeString());
   const [allTodos, setallTodos] = useState([]);
+  const [time, setTime] = useState(new Date().toLocaleTimeString());
   const [editmode, seteditmode] = useState(false);
   const [num, setNum] = useState(0);
   const [currentIndex, setcurrentIndex] = useState(0);
@@ -41,7 +37,7 @@ function App() {
   };
 
   const deleteTodo = (index) => {
-    let newAllTodos = [...allTodos];
+     let newAllTodos = [...allTodos];
     let neededTodo = newAllTodos.filter((todo, ind) => index !== ind);
     localStorage.todos = JSON.stringify(neededTodo);
     localStorage.number = JSON.stringify(num - 1);
@@ -56,6 +52,7 @@ function App() {
     setTask(task);
     setcurrentIndex(index);
     inputReference.current.focus();
+    console.log(currentIndex);
   };
 
   const update = () => {
@@ -66,35 +63,77 @@ function App() {
     seteditmode(false);
   };
 
-  const changeTask=(event)=>{
-  setTask(event.target.value)
-  }
-
- 
   return (
     <>
       <div className="container">
         <div className="row">
-          <div className="col-10 shadow my-4 py-2 mx-auto">
-            <Addtodo
-            changeTask={changeTask}
-            task={task}
-              add={add}
-              update={update}
-              editmode={editmode}
-              inputReference={inputReference}
-            />
-            <ListTodo
-              deleteTodo={deleteTodo}
-              editTodo={editTodo}
-              allTodos={allTodos}
-              num={num}
-            />
+          <div className="col-12 shadow my-4 py-2 mx-auto">
+            {editmode === false ? (
+              <h1 className="text-center">Add Task</h1>
+            ) : (
+              <h1 className="text-center">Edit Task</h1>
+            )}
+            <div className="input-group mb-3">
+              <input
+                type="text"
+                name="addDo"
+                id=""
+                ref={inputReference}
+                placeholder="Add task"
+                className="form-control my-2"
+                onChange={(event) => setTask(event.target.value)}
+                value={task}
+              />
+
+              <div className="input-group-apend">
+                {editmode === false ? (
+                  <button className="btn btn-primary mt-2" onClick={add}>
+                    +Add
+                  </button>
+                ) : (
+                  <button className="btn btn-success mt-2" onClick={update}>
+                    Update
+                  </button>
+                )}
+              </div>
+            </div>
+            {allTodos.length < 1 ? (
+              <h5>There is no task, add!</h5>
+            ) : (
+              <>
+                <h3>
+                  {num > 1 ? "Tasks" : "Task"} ({num})
+                </h3>
+                <table className="table text-center">
+                  <tr>
+                    <th>S/N</th>
+                    <th>{num > 1 ? "Tasks" : "Task"}</th>
+                    <th>Time</th>
+                    <th>Actions</th>
+                  </tr>
+                  {allTodos.map((todo, index) => (
+                    <tr key={index}>
+                      <td>
+                        <strong>{index + 1}.</strong>
+                      </td>
+                      <td>{todo.task}</td>
+                      <td>{todo.time}</td>
+                      <td>
+                      
+                        <i className="fa fa-pencil-square fa-2x text-warning mr-2" aria-hidden="true" onClick={() => editTodo(index)}></i>
+                        
+                        <i className="fa fa-trash-o fa-2x text-danger ml-2" aria-hidden="true" onClick={() => deleteTodo(index)}></i>
+          
+                      </td>
+                    </tr>
+                  ))}
+                </table>
+              </>
+            )}
           </div>
         </div>
       </div>
     </>
-    
   );
 }
 
